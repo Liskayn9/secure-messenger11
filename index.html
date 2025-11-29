@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Messenger</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="light-theme">
+    <!-- Секция авторизации -->
+    <div id="authSection" class="auth-section">
+        <div class="auth-container">
+            <h1>Secure Messenger</h1>
+            
+            <!-- Форма входа -->
+            <div id="loginForm" class="auth-form">
+                <input type="text" id="loginUsername" placeholder="Имя пользователя" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="rememberMe">
+                    Запомнить меня
+                </label>
+                <button id="loginBtn" class="btn-primary">Войти</button>
+                <p>Нет аккаунта? <a href="#" id="showRegister">Зарегистрироваться</a></p>
+            </div>
+            
+            <!-- Форма регистрации -->
+            <div id="registerForm" class="auth-form" style="display: none;">
+                <input type="text" id="registerUsername" placeholder="Имя пользователя" required>
+                <input type="email" id="registerEmail" placeholder="Email (необязательно)">
+                <input type="password" id="registerPassword" placeholder="Пароль" required>
+                <button id="registerBtn" class="btn-primary">Зарегистрироваться</button>
+                <p>Уже есть аккаунт? <a href="#" id="showLogin">Войти</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной интерфейс -->
+    <div id="mainSection" class="main-section" style="display: none;">
+        <header class="header">
+            <h2>Secure Messenger</h2>
+            <div class="header-controls">
+                <button id="themeToggle" class="btn-secondary">🌙</button>
+                <button id="logoutBtn" class="btn-secondary">Выйти</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Сайдбар с друзьями -->
+            <div class="sidebar">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Поиск пользователей...">
+                    <div id="searchResults" class="search-results"></div>
+                </div>
+                
+                <div class="friends-section">
+                    <h3>Друзья</h3>
+                    <div id="friendsList" class="friends-list"></div>
+                </div>
+            </div>
+
+            <!-- Область чата -->
+            <div id="chatSection" class="chat-section" style="display: none;">
+                <div class="chat-header">
+                    <h3 id="currentChatName">Чат</h3>
+                </div>
+                
+                <div id="messagesContainer" class="messages-container"></div>
+                
+                <div class="message-input-container">
+                    <input type="text" id="messageInput" placeholder="Введите сообщение...">
+                    <button id="sendMessageBtn" class="btn-primary">Отправить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрипты -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Messenger</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Экран авторизации -->
+        <div id="authScreen" class="screen active">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h1>💬 Secure Messenger</h1>
+                    <p>Простой и безопасный мессенджер</p>
+                </div>
+
+                <div class="auth-tabs">
+                    <button class="tab-btn active" data-tab="login">Вход</button>
+                    <button class="tab-btn" data-tab="register">Регистрация</button>
+                </div>
+
+                <!-- Форма входа -->
+                <div id="loginForm" class="auth-form active">
+                    <div class="input-group">
+                        <label for="loginUsername">Имя пользователя</label>
+                        <input type="text" id="loginUsername" placeholder="Введите ваш логин">
+                    </div>
+                    <div class="input-group">
+                        <label for="loginPassword">Пароль</label>
+                        <input type="password" id="loginPassword" placeholder="Введите ваш пароль">
+                    </div>
+                    <div class="remember-me">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Запомнить меня</label>
+                    </div>
+                    <!-- ОБНОВЛЕННАЯ КНОПКА -->
+                    <button class="btn-primary" id="loginBtn" type="button">Войти</button>
+                </div>
+
+                <!-- Форма регистрации -->
+                <div id="registerForm" class="auth-form">
+                    <div class="input-group">
+                        <label for="registerUsername">Имя пользователя</label>
+                        <input type="text" id="registerUsername" placeholder="Придумайте логин" maxlength="20">
+                        <div class="input-hint">Только буквы, цифры и подчёркивания</div>
+                        <div class="username-status" id="usernameStatus"></div>
+                    </div>
+                    <div class="input-group">
+                        <label for="registerPassword">Пароль</label>
+                        <input type="password" id="registerPassword" placeholder="Создайте пароль (минимум 6 символов)">
+                    </div>
+                    <div class="input-group">
+                        <label for="registerEmail">Email (необязательно)</label>
+                        <input type="email" id="registerEmail" placeholder="your@email.com">
+                    </div>
+                    <!-- ОБНОВЛЕННАЯ КНОПКА -->
+                    <button class="btn-primary" id="registerBtn" type="button">Создать аккаунт</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной интерфейс мессенджера -->
+        <div id="mainScreen" class="screen">
+            <div class="messenger-container">
+                <!-- Header -->
+                <header class="header">
+                    <div class="header-left">
+                        <h2>Secure Messenger</h2>
+                    </div>
+                    <div class="header-right">
+                        <button class="theme-toggle" id="themeToggle" type="button">
+                            <span class="theme-icon">🌙</span>
+                        </button>
+                        <div class="user-menu">
+                            <span class="username" id="headerUsername">Пользователь</span>
+                            <button class="btn-logout" type="button">Выйти</button>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="main-content">
+                    <!-- Сайдбар -->
+                    <aside class="sidebar">
+                        <div class="sidebar-tabs">
+                            <button class="sidebar-tab active" data-tab="friends" type="button">Друзья</button>
+                            <button class="sidebar-tab" data-tab="search" type="button">Поиск</button>
+                            <button class="sidebar-tab" data-tab="requests" type="button">Запросы</button>
+                        </div>
+
+                        <!-- Список друзей -->
+                        <div id="friendsTab" class="tab-content active">
+                            <div class="tab-header">
+                                <h3>Друзья</h3>
+                            </div>
+                            <div class="friends-list" id="friendsList">
+                                <div class="empty-state">
+                                    <div class="empty-icon">👥</div>
+                                    <div class="empty-text">У вас пока нет друзей</div>
+                                    <div class="empty-subtext">Найдите пользователей во вкладке "Поиск"</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Поиск пользователей -->
+                        <div id="searchTab" class="tab-content">
+                            <div class="tab-header">
+                                <h3>Поиск пользователей</h3>
+                            </div>
+                            <div class="search-box">
+                                <input type="text" id="userSearch" placeholder="Введите имя пользователя...">
+                            </div>
+                            <div class="users-list" id="searchResults">
+                                <div class="empty-state">
+                                    <div class="empty-icon">🔍</div>
+                                    <div class="empty-text">Начните поиск пользователей</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Запросы в друзья -->
+                        <div id="requestsTab" class="tab-content">
+                            <div class="tab-header">
+                                <h3>Запросы в друзья</h3>
+                            </div>
+                            <div class="requests-list" id="requestsList">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📨</div>
+                                    <div class="empty-text">Нет входящих запросов</div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <!-- Область чата -->
+                    <main class="chat-area">
+                        <div class="chat-header" id="chatHeader">
+                            <div class="chat-user-info">
+                                <div class="user-avatar" id="chatUserAvatar">U</div>
+                                <div class="user-details">
+                                    <div class="user-name" id="chatUserName">Друг</div>
+                                    <div class="user-status" id="chatUserStatus">В сети</div>
+                                </div>
+                            </div>
+                            <div class="chat-actions">
+                                <button class="btn-clear" type="button">Очистить чат</button>
+                            </div>
+                        </div>
+                        
+                        <div class="messages-container" id="messagesContainer">
+                            <div class="no-chat-selected" id="noChatSelected">
+                                <div class="empty-state">
+                                    <div class="empty-icon">💬</div>
+                                    <div class="empty-text">Выберите чат для общения</div>
+                                    <div class="empty-subtext">Выберите друга из списка чтобы начать общение</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="message-input-container" id="messageInputContainer">
+                            <input type="text" id="messageInput" placeholder="Введите сообщение..." maxlength="1000">
+                            <!-- ОБНОВЛЕННАЯ КНОПКА -->
+                            <button class="btn-send" id="sendBtn" type="button">Отправить</button>
+                        </div>
+                    </main>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
